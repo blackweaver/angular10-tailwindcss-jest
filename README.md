@@ -1,27 +1,99 @@
-# Site
+## Tilewildcss
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.4.
+Configuring: https://www.youtube.com/watch?v=NsKBZuagLcg
+Documentation: https://tailwindcss.com/docs
 
-## Development server
+`npm i tailwindcss postcss-import postcss-loader postcss-scss @angular-builder/custom-webpack - D`
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+### style.scss
 
-## Code scaffolding
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+`npx tailwind init`
 
-## Build
+### webpack.config.js
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+module.exports = {
 
-## Running unit tests
+    module: {
+        rules: [
+            {
+                test: /\.scss$/,
+                loader: 'postcss-loader',
+                options: {
+                    ident: 'postcss',
+                    syntax: 'postcss-scss',
+                    plugins: () => [
+                        require('postcss-import'),
+                        require('tailwindcss'),
+                        require('autoprefixer')
+                    ]
+                }
+            }
+        ]
+    }
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+}
 
-## Running end-to-end tests
+### angular.json
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+"build": {
+    "builder": "@angular-builders/custom-webpack:browser",
+    "options": {
+        "customWebpackConfig": {
+            "path": "./webpack.config.js"
+        },
 
-## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+"serve": {
+        "builder": "@angular-builders/custom-webpack:dev-server",
+        "options": {
+        "browserTarget": "site:build",
+        "customWebpackConfig": {
+            "path": "./webpack.config.js"
+        }
+        },
+
+
+## Jest
+
+Configuring: https://itnext.io/how-to-use-jest-in-angular-aka-make-unit-testing-great-again-e4be2d2e92d1
+
+* Create an Angular CLI project if you have not created one yet.
+* We need to install Jest and typings: npm install jest `@types/jest --only=dev`.
+* To make Jest know how to work in an Angular environment, we need to install the following NPM package: `npm install jest-preset-angular`.
+* Add the Jest configuration to your `package.json`. Alternatively, you can create a JavaScript file to configure Jest.
+* Adjust your test scripts: replace any ng test usage with Jest commands.
+* Remove Jasmine and its typings: npm uninstall jasmine @types/jasmine.
+* Remove any karma related packages and test.ts if you do not need to test in real browsers.
+
+### package.json
+
+{
+ "name": "my-package",
+ "version": "0.0.1",
+ "license": "MIT",
+ "scripts": {
+  "test": "jest",
+  "test:watch": "jest --watch",
+  "test:cc": "jest --coverage"
+ },
+ "dependencies": {
+  "@angular/common": "7.2.1",
+  "@angular/compiler": "7.2.1",
+  ...
+ },
+ "devDependencies": {
+  "@types/jest": "^24.0.6",
+  "jest": "^24.1.0",
+  "jest-preset-angular": "^6.0.2",
+  "ts-node": "~7.0.1",
+  "typescript": "3.2.4"
+ },
+ "jest": {
+  "preset": "jest-preset-angular",
+  "setupTestFrameworkScriptFile": "<rootDir>/setupJest.ts"
+ }
+}
